@@ -14,7 +14,7 @@ interface FetchNotesResponse {
 export default function FilteredNotesClient() {
   const params = useParams();
   const slug = params.slug as string[];
-  const tag = slug[0] === "all" ? undefined : slug[0];
+  const tag = slug?.[0] === "all" ? undefined : slug?.[0];
 
   const { data } = useQuery<FetchNotesResponse>({
     queryKey: ["notes", 1, "", tag],
