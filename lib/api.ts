@@ -1,5 +1,4 @@
-import axios from "axios";
-import type { AxiosResponse } from "axios";
+import axios, { type AxiosResponse } from "axios";
 import type { Note } from "@/types/note";
 
 const api = axios.create({
@@ -13,6 +12,7 @@ export interface FetchNotesParams {
   page: number;
   perPage: number;
   search?: string;
+  tag?: string; 
 }
 
 export interface FetchNotesResponse {
@@ -26,7 +26,6 @@ export const fetchNotes = async (
   const res: AxiosResponse<FetchNotesResponse> = await api.get("/notes", {
     params,
   });
-
   return res.data;
 };
 
