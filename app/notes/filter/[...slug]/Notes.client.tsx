@@ -1,27 +1,70 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNotes } from "@/lib/api";
 import NoteList from "@/components/NoteList/NoteList";
-import type { Note } from "@/types/note";
+import SearchBox from "@/components/SearchBox/SearchBox";
+import Pagination from "@/components/Pagination/Pagination";
+import Modal from "@/components/Modal/Modal";
+import NoteForm from "@/components/NoteForm/NoteForm";
 
-interface FetchNotesResponse {
-  notes: Note[];
-  totalPages: number;
+interface Props {
+  tag: string;
 }
 
-export default function FilteredNotesClient() {
-  const params = useParams();
-  const slug = params.slug as string[];
-  const tag = slug?.[0] === "all" ? undefined : slug?.[0];
+export default function Notes({ tag }: Props) {
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
 
-  const { data } = useQuery<FetchNotesResponse>({
-    queryKey: ["notes", 1, "", tag],
-    queryFn: () => fetchNotes({ page: 1, perPage: 12, tag }),
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["notes", tag, debouncedSearch, page],
+    queryFn: () =>
+      fetchNotes({
+        page,
+        perPage: 10,
+        search: debouncedSearch || undefined,
+        tag: tag !== "all" ? tag : undefined,
+      }),
   });
 
-  const notes = data?.notes ?? [];
+  if (isLoading) return <p>Loading...</p>;
+  if (isError || !data) return <p>Error loading notes</p>;
 
-  return <>{notes.length ? <NoteList notes={notes} /> : <p>No notes found.</p>}</>;
+  return (
+    <>
+      <button onClick={() => setIsOpen(true)}>Create note</button>
+
+      <SearchBox onSearch={setSearch} />
+
+      {data.notes.length > 0 ? (
+        <NoteList notes={data.notes} />
+      ) : (
+        <p>No notes found</p>
+      )}
+
+     <Pagination
+  currentPage={page}
+  totalPages={data.totalPages}
+  onPageChange={setPage}
+/>
+
+      {isOpen && (
+        <Modal onClose={() => setIsOpen(false)}>
+          <NoteForm onClose={() => setIsOpen(false)} />
+        </Modal>
+      )}
+    </>
+  );
 }

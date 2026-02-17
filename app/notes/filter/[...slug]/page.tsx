@@ -1,27 +1,30 @@
-"use client";
-
-import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import Notes from "./Notes.client";
 import { fetchNotes } from "@/lib/api";
-import NoteList from "@/components/NoteList/NoteList";
-import type { Note } from "@/types/note";
 
-interface FetchNotesResponse {
-  notes: Note[];
-  totalPages: number;
+interface PageProps {
+  params: Promise<{ slug: string[] }>;
 }
 
-export default function FilteredNotes() {
-  const params = useParams();
-  const slug = params.slug as string[]; // catch-all повертає масив
-  const tag = slug[0] === "all" ? undefined : slug[0];
+export default async function FilterPage({ params }: PageProps) {
+  const { slug } = await params;
+  const tag = slug?.[0];
 
-  const { data } = useQuery<FetchNotesResponse>({
-    queryKey: ["notes", 1, "", tag],
-    queryFn: () => fetchNotes({ page: 1, perPage: 12, tag }),
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: ["notes", tag ?? "all", "", 1],
+    queryFn: () =>
+      fetchNotes({
+        page: 1,
+        perPage: 10,
+        tag: tag !== "all" ? tag : undefined,
+      }),
   });
 
-  const notes = data?.notes ?? [];
-
-  return <>{notes.length ? <NoteList notes={notes} /> : <p>No notes found.</p>}</>;
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <Notes tag={tag ?? "all"} />
+    </HydrationBoundary>
+  );
 }
