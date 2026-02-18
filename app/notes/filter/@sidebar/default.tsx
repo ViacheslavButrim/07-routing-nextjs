@@ -1,15 +1,26 @@
 import Link from "next/link";
+import css from "./Sidebar.module.css";
 
-const tags = ["All", "Work", "Personal", "Todo", "Meeting", "Shopping"] as const;
+const tags = [
+  { label: "All notes", slug: "all" },
+  { label: "Work", slug: "work" },
+  { label: "Personal", slug: "personal" },
+  { label: "Todo", slug: "todo" },
+  { label: "Meeting", slug: "meeting" },
+  { label: "Shopping", slug: "shopping" },
+] as const;
 
 export default function Sidebar() {
   return (
-    <nav>
-      <ul>
+    <nav className={css.sidebar}>
+      <ul className={css.list}>
         {tags.map((tag) => (
-          <li key={tag}>
-            <Link href={`/notes/filter/${tag.toLowerCase()}`}>
-              {tag}
+          <li key={tag.slug} className={css.item}>
+            <Link
+              href={`/notes/filter/${tag.slug}`}
+              className={css.link}
+            >
+              {tag.label}
             </Link>
           </li>
         ))}
