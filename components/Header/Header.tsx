@@ -1,10 +1,11 @@
 import Link from "next/link";
+import css from "./Header.module.css";
 
 export default function Header() {
   return (
-    <header>
+    <header className={css.header}>
       <nav>
-        <ul>
+        <ul className={css.navigation}>
           <li>
             <Link href="/">Home</Link>
           </li>

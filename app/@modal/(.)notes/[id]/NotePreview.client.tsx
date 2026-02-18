@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNoteById } from "@/lib/api";
 import Modal from "@/components/Modal/Modal";
+import css from "./NotePreview.module.css"
 
 interface Props {
   id: string;
@@ -23,8 +24,27 @@ export default function NotePreview({ id }: Props) {
 
   return (
     <Modal onClose={() => router.back()}>
+      <div className={css.container}>
+  <div className={css.item}>
+    <button
+      className={css.backBtn}
+      onClick={() => router.back()}
+    >
+      Close
+    </button>
+
+    <div className={css.header}>
       <h2>{data.title}</h2>
-      <p>{data.content}</p>
+      <span className={css.tag}>{data.tag}</span>
+    </div>
+
+    <p className={css.content}>{data.content}</p>
+
+    <p className={css.date}>
+      {new Date(data.createdAt).toLocaleString()}
+    </p>
+  </div>
+</div>
     </Modal>
   );
 }

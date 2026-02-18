@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const tags = ["all", "work", "personal", "important"];
+const tags = ["All", "Work", "Personal", "Todo", "Meeting", "Shopping"] as const;
 
 export default function Sidebar() {
   return (
@@ -8,7 +8,9 @@ export default function Sidebar() {
       <ul>
         {tags.map((tag) => (
           <li key={tag}>
-            <Link href={`/notes/filter/${tag}`}>{tag}</Link>
+            <Link href={`/notes/filter/${tag.toLowerCase()}`}>
+              {tag}
+            </Link>
           </li>
         ))}
       </ul>

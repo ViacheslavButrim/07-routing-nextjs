@@ -1,5 +1,7 @@
 "use client";
 
+import css from "./Pagination.module.css";
+
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
@@ -14,24 +16,30 @@ export default function Pagination({
   if (totalPages <= 1) return null;
 
   return (
-    <div style={{ marginTop: 20 }}>
-      <button
-        disabled={currentPage === 1}
-        onClick={() => onPageChange(currentPage - 1)}
-      >
-        Prev
-      </button>
+    <ul className={css.pagination}>
+      <li>
+        <button
+          disabled={currentPage === 1}
+          onClick={() => onPageChange(currentPage - 1)}
+        >
+          Prev
+        </button>
+      </li>
 
-      <span style={{ margin: "0 12px" }}>
-        {currentPage} / {totalPages}
-      </span>
+      <li className={css.active}>
+        <button>
+          {currentPage} / {totalPages}
+        </button>
+      </li>
 
-      <button
-        disabled={currentPage === totalPages}
-        onClick={() => onPageChange(currentPage + 1)}
-      >
-        Next
-      </button>
-    </div>
+      <li>
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => onPageChange(currentPage + 1)}
+        >
+          Next
+        </button>
+      </li>
+    </ul>
   );
 }
