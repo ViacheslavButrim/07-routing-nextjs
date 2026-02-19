@@ -18,7 +18,7 @@ export default async function FilterPage({ params }: PageProps) {
       fetchNotes({
         page: 1,
         perPage: 10,
-        tag: tag !== "all" ? tag : undefined,
+        search: tag !== "all" ? tag : undefined,
       }),
   });
 
